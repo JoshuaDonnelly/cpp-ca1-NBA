@@ -1,4 +1,6 @@
 #include "nba.h"
+
+#include <algorithm>
 #include <fstream>
 #include <map>
 #include <sstream>
@@ -60,6 +62,7 @@ int findPlayerByName(const vector<NBAPlayer>& players, const string& name) {
 }
 void displayFoundPlayer(vector<NBAPlayer>& players) {
         string name;
+        cin.ignore();
         cout << "Enter player name to search: ";
         getline(cin, name);
 
@@ -94,3 +97,63 @@ void displayTeamCounts(const map<string, int>& teamCounts) {
         cout << team << ": " << count << " players\n";
     }
 }
+void displayPlayersByTeam(const vector<NBAPlayer>& players, const string& teamName) {
+    cout << "\nPlayers from " << teamName << ":\n";
+    bool found = false;
+
+    for (const auto& player : players) {
+        if (player.team == teamName) {
+            cout << player.name << " | Games: " << player.gamesPlayed
+                 << " | PPG: " << player.ppg
+                 << " | APG: " << player.apg
+                 << " | RPG: " << player.rpg << endl;
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No players found from " << teamName << ".\n";
+    }
+}
+float findPPGStats(const vector<NBAPlayer>& players, NBAPlayer& highest, NBAPlayer& lowest) {
+    highest = players[0];
+    lowest = players[0];
+    float totalPPG = 0;
+
+    for (const auto& player : players) {
+        totalPPG += player.ppg;
+
+        if (player.ppg > highest.ppg) {
+            highest = player;
+        }
+        if (player.ppg < lowest.ppg) {
+            lowest = player;
+        }
+    }
+    return totalPPG / players.size();
+}
+//Couldnt get seaching working
+void sortAndDisplayPlayers(vector<NBAPlayer> players, const string& field) {
+    if (field == "PPG") {
+        sort(players.begin(), players.end(), [](const NBAPlayer& a, const NBAPlayer& b) {
+            return a.ppg > b.ppg;
+        });
+    }
+        else if (field == "APG") {
+            sort(players.begin(), players.end(), [](const NBAPlayer& a, const NBAPlayer& b) {
+                return a.apg > b.apg;
+            });
+        }
+        else {
+            cout << "Invalid field selection. Choose PPG, APG.\n";
+            return;
+        }
+        cout << "\nPlayers sorted by " << field << " (Descending):\n";
+        for (const auto& player : players) {
+            cout << player.name << " | " << player.team << " | "
+                 << "PPG: " << player.ppg << " | APG: " << player.apg
+                 << " | RPG: " << player.rpg << endl;
+
+        }
+    }
+
+
